@@ -39,20 +39,18 @@
             display: none; z-index: 30; background: #000;
         }
 
-        /* Фон ночной комнаты */
         #bedroomBg {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background: url('img/bg_night_tv.jpg') center/cover no-repeat;
             z-index: 1; transition: filter 1s, transform 1.5s;
         }
 
-        /* Белая вспышка */
         #tvFlash {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background: #fff; z-index: 100; opacity: 0; pointer-events: none; transition: opacity 0.3s;
         }
 
-        /* Контейнер для видео */
+        /* Контейнер для видео (Vimeo) */
         #videoContainer {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.15); 
             width: 100vw; height: 100vh; 
@@ -68,14 +66,13 @@
             opacity: 1; pointer-events: auto;
         }
 
-        /* ВИДЕО: растягиваем на весь экран */
-        #videoContainer video {
+        /* Настройка iframe Vimeo */
+        #videoContainer iframe {
             width: 100%; 
             height: 100%; 
-            object-fit: cover; /* Заполняет экран. Если нужно целиком - замени на contain */
+            border: none;
         }
 
-        /* Кнопка Пропустить (полупрозрачная) */
         #skipBtn {
             position: absolute; bottom: 30px; right: 30px; z-index: 60;
             padding: 10px 20px; font-size: 14px; font-family: 'Courier New', Courier, monospace;
@@ -84,7 +81,6 @@
             display: none; border-radius: 5px; backdrop-filter: blur(3px);
         }
 
-        /* Кнопка Стоп */
         #stopBtn {
             position: absolute; top: 20px; left: 20px; z-index: 80;
             padding: 8px 15px; font-size: 14px; font-family: 'Courier New', Courier, monospace;
@@ -92,7 +88,6 @@
             color: #ccc; text-transform: uppercase; cursor: pointer; display: none;
         }
 
-        /* Экран "Спустя пару часов" */
         #timeSkip {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background: #000; display: none; flex-direction: column; align-items: center; justify-content: center;
@@ -101,14 +96,12 @@
         #timeSkip h2 { color: #ff0000; font-size: 24px; letter-spacing: 2px; animation: pulse 2s infinite; }
         @keyframes pulse { 0% { opacity: 0.7; } 50% { opacity: 1; } 100% { opacity: 0.7; } }
 
-        /* Пауза */
         #pauseMenu {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.9); display: none; flex-direction: column; align-items: center; justify-content: center;
             z-index: 200;
         }
 
-        /* Кнопки меню */
         .menu-content {
             position: relative; z-index: 15; display: flex; flex-direction: column; align-items: center; gap: 10px;
             width: 90%; max-width: 380px;
@@ -131,7 +124,6 @@
             z-index: 10; text-align: center;
         }
 
-        /* Плашки */
         #liveBadge {
             position: absolute; top: 30px; left: 20px; z-index: 15;
             display: flex; align-items: center; gap: 8px;
@@ -155,7 +147,6 @@
         <source src="img/bg_music.mp3" type="audio/mpeg">
     </audio>
 
-    <!-- МЕНЮ -->
     <div id="mainMenu">
         <div class="screen-bg"></div>
         <div class="overlay"></div>
@@ -183,7 +174,6 @@
         </div>
     </div>
 
-    <!-- ИГРА -->
     <div id="gameScene">
         <div id="bedroomBg"></div>
         <div id="tvFlash"></div>
@@ -194,20 +184,20 @@
             <button class="btn btn-center" style="width: 250px; background: rgba(0,0,0,0.8);" onclick="turnOnTV()">ВКЛЮЧИТЬ ТЕЛЕВИЗОР</button>
         </div>
 
-        <!-- Контейнер для видео (Прямая ссылка Savedly) -->
+        <!-- Контейнер для видео (Vimeo с ID) -->
         <div id="videoContainer">
-            <video id="zelenskyVideo" playsinline crossorigin="anonymous">
-                <source src="https://cdn.savedly.net/apbm8ns7.mp4" type="video/mp4">
-            </video>
+            <iframe id="zelenskyVideo" 
+                    src="" 
+                    allow="autoplay; fullscreen; picture-in-picture" 
+                    allowfullscreen>
+            </iframe>
             <button id="skipBtn" onclick="skipVideo()">Пропустить >></button>
         </div>
 
-        <!-- Черный экран -->
         <div id="timeSkip">
             <h2>СПУСТЯ ПАРУ ЧАСОВ...</h2>
         </div>
 
-        <!-- Меню паузы -->
         <div id="pauseMenu">
             <h2 style="color: #fff; font-size: 20px; margin-bottom: 30px;">ПАУЗА</h2>
             <div class="menu-content" style="max-width: 250px;">
@@ -219,7 +209,6 @@
 
     <script>
         const music = document.getElementById('bgMusic');
-        const video = document.getElementById('zelenskyVideo');
         
         window.onload = () => {
             music.volume = 0.5;
@@ -241,7 +230,6 @@
         
         function startChapter(num) {
             if (num === 1) {
-                // ВЫКЛЮЧАЕМ МУЗЫКУ
                 music.pause();
                 music.currentTime = 0;
                 
@@ -251,6 +239,10 @@
         }
 
         // --- СЦЕНАРИЙ ---
+        
+        // Твой ID видео с Vimeo
+        const vimeoId = "1244793875"; 
+
         function turnOnTV() {
             document.getElementById('powerBtnContainer').style.display = 'none';
             
@@ -265,11 +257,9 @@
                 let container = document.getElementById('videoContainer');
                 container.style.display = 'flex';
                 
-                // Запускаем видео
-                video.currentTime = 0;
-                video.play().catch(e => {
-                    console.log("Ошибка:", e);
-                });
+                // Включаем Vimeo (autoplay=1)
+                let iframe = document.getElementById('zelenskyVideo');
+                iframe.src = `https://player.vimeo.com/video/${vimeoId}?autoplay=1&title=0&byline=0&portrait=0&controls=1`;
                 
                 setTimeout(() => { container.style.opacity = '1'; }, 100);
 
@@ -279,15 +269,12 @@
                     setTimeout(() => { document.getElementById('skipBtn').style.display = 'block'; }, 1000);
                 }, 3000);
 
-                // Конец видео
-                video.onended = () => { skipVideo(); };
-
             }, 300);
         }
 
         function skipVideo() {
-            video.pause();
-            video.currentTime = 0;
+            // Останавливаем видео (очищая src)
+            document.getElementById('zelenskyVideo').src = "";
             
             let container = document.getElementById('videoContainer');
             container.classList.remove('zoomed');
@@ -298,22 +285,16 @@
             let skipScreen = document.getElementById('timeSkip');
             skipScreen.style.display = 'flex';
             setTimeout(() => { skipScreen.style.opacity = '1'; }, 50);
-            
-            // Включаем кнопку Стоп обратно (на будущее)
-            document.getElementById('stopBtn').style.display = 'block';
         }
 
         // --- ПАУЗА ---
         function openPause() {
             document.getElementById('pauseMenu').style.display = 'flex';
-            video.pause(); 
+            // Vimeo на паузу через JS без API не поставить, но меню закроет обзор
         }
         
         function closePause() {
             document.getElementById('pauseMenu').style.display = 'none';
-            if(document.getElementById('videoContainer').style.display === 'flex') {
-                video.play(); 
-            }
         }
     </script>
 </body>
