@@ -1,0 +1,15 @@
+{
+  "name": "Холодный Рассвет",
+  "short_name": "Холодный Рассвет",
+  "start_url": "./index.html",
+  "display": "fullscreen",
+  "background_color": "#000000",
+  "theme_color": "#000000",
+  "icons": [
+    {
+      "src": "img/bg_menu.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg"
+    }
+  ]
+}
