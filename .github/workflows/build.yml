@@ -1,0 +1,28 @@
+name: Build APK
+on: [push, workflow_dispatch]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          
+      - name: Install dependencies
+        run: npm install -g @bubblewrap/cli
+        
+      - name: Initialize project
+        run: |
+          echo '{"packageId":"com.antarcida.colddawn","name":"Холодный Рассвет","launcherName":"Холодный Рассвет","webManifestUrl":"https://antarcida45-dev.github.io/ICE-game/manifest.json","appVersionName":"1.0.0","appVersionCode":1,"host":"antarcida45-dev.github.io","startUrl":"/ICE-game/","iconUrl":"https://antarcida45-dev.github.io/ICE-game/img/bg_menu.jpg","themeColor":"#000000","backgroundColor":"#000000"}' > twa-manifest.json
+          
+      - name: Build APK
+        run: bubblewrap build --skipPwaValidation
+        
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: Cold-Dawn-APK
+          path: ./*.apk
